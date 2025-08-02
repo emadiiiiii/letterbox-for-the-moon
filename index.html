@@ -1,200 +1,177 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Valentine's Day</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+  <meta charset="UTF-8">
+  <title>نامه‌ها</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap');
 
-        body {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: url('MeAndTheMoon.jpg') no-repeat center center fixed;
-            background-size: cover;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-            font-family: 'Roboto', sans-serif;
-            overflow: hidden;
-            position: relative;
-        }
+    body {
+      font-family: "Vazirmatn", Tahoma, sans-serif;
+      background: linear-gradient(to bottom right, #ffecd2, #fcb69f);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      direction: ltr;
+      perspective: 1000px;
+    }
 
-        .pixel-sun {
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 25vw;
-            height: 25vw;
-            animation: sunAnimation 20s linear infinite;
-            opacity: 1;
-            z-index: 2;
-        }
+    .letters {
+      display: flex;
+      gap: 40px;
+    }
 
-        .pixel-sun0 {
-            top: 50%;
-            left: 50%;
-            width: 25vw;
-            height: 25vw;
-            z-index: 1;
-        }
+    .letter-container {
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
 
-        @keyframes sunAnimation {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
-        }
+    .letter {
+      width: 160px;
+      height: 110px;
+      background: #fff;
+      border: 2px solid #dcdcdc;
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      transform-style: preserve-3d;
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+    }
 
-        .message {
-            font-family: 'Press Start 2P', cursive;
-            font-size: 2.5vw;
-            color: #990000;
-            margin-top: 30px;
-            letter-spacing: 2px;
-            text-shadow: 
-        2px 2px 5px rgba(0, 0, 0, 0.4),  /* Black shadow for the stroke */
-        -1px -1px 2px rgba(0, 0, 0, 0.7),  /* White shadow for the outline effect */
-        1px 1px 2px rgba(0, 0, 0, 0.7); 
-        }
+    .letter::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 50%;
+      background: #ff6f61;
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      transform-origin: top center;
+      transform: rotateX(0deg);
+      transition: transform 0.5s ease;
+      z-index: 2;
+    }
 
-        @media (max-width: 600px) {
-            .message {
-                font-size: 6vw;
-            }
-        }
+    .letter::after {
+      content: '';
+      position: absolute;
+      bottom: 50%;
+      left: 0;
+      width: 100%;
+      height: 50%;
+      background: #ffefef;
+      clip-path: polygon(0% 0%, 50% 100%, 100% 0%, 100% 100%, 0 100%);
+      z-index: 1;
+    }
 
-        .play-pause-button {
-            width: 80px;
-            height: 80px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 50%;
-            cursor: pointer;
-            margin-top: 40px;
-            transition: all 0.3s ease;
-            animation: pulse 1.5s infinite;
-        }
+    .letter-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, 100%);
+      width: 80%;
+      height: 80%;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: transform 0.5s ease;
+      z-index: 1;
+    }
 
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.1);
-            }
-            100% {
-                transform: scale(1);
-            }
-        }
+    .letter-container:hover .letter-content {
+      transform: translate(-50%, -50%);
+    }
 
-        .play-pause-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
-        }
+    .letter:hover::before {
+      transform: rotateX(-160deg);
+    }
 
-        .play-pause-button img {
-            width: 50px;
-            height: 50px;
-        }
+    .label {
+      margin-top: 16px;
+      font-weight: bold;
+      font-size: 18px;
+      color: #333;
+    }
 
-        audio {
-            margin-top: 30px;
-            border: none;
-            outline: none;
-        }
+    .letter-container:hover {
+      transform: translateY(-8px);
+    }
 
-        .progress-bar-container {
-            width: 80%;
-            margin-top: 20px;
-            position: absolute;
-            bottom: 10px;
-            display: flex;
-            justify-content: center;
-        }
+    .letter-container:hover .letter {
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
+    }
 
-        progress {
-            width: 100%;
-            height: 10px;
-            border-radius: 5px;
-            background: #fff;
-            color: #990000;
-            border: none;
-        }
+    .letter-content-line {
+        width: 80%;
+        height: 4px;
+        background-color: #333;
+        margin: 8px auto;
+        border-radius: 2px;
+    }
 
-        @media (max-width: 600px) {
-            .pixel-sun {
-                width: 40vw;
-                height: 40vw;
-            }
-        }
+    .bottom-flap {
+  position: absolute;
+  bottom: 0%;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background: #ffefef;
+  clip-path: polygon(0 100, 100% 100%, 100% 0);
+  z-index: 2;
+}
 
-    </style>
+
+  </style>
 </head>
 <body>
 
-        <div class="container">
-            <img class="pixel-sun" src="https://img.icons8.com/?size=100&id=80502&format=png&color=000000" alt="Sun icon">
+  <div class="letters flex">
+    
+    <div class="letter-container" onclick="navigateTo('ValentinesDay.html')">
+      <div class="letter">
+        <div class="letter-content">
+            <div class="letter-content-line"></div>
+            <div class="letter-content-line"></div>
+            <div class="letter-content-line"></div>
         </div>
-        
-        <div class="message">
-            <p>
-                You Are My Sunshine<br>My only sunshine<br><br>I love you so much :))
-            </p>
+        <div class="bottom-flap"></div>
+      </div>
+      <div class="label">My Sunshine ❤</div>
+    </div>
+    <div class="letter-container" onclick="navigateTo('Jooje.html')">
+      <div class="letter">
+        <div class="letter-content">
+            <div class="letter-content-line"></div>
+            <div class="letter-content-line"></div>
+            <div class="letter-content-line"></div>
         </div>
-        
-        <audio id="audio" autoplay loop muted>
-            <source src="https://dl1.tarikhema.org/music/2021/12/07//you%20are%20my%20sunshine-Christina%20Perri.mp3" type="audio/mpeg">
-            <p>Your browser does not support the audio element. The song is "You Are My Sunshine" by Christina Perri.</p>
-        </audio>
-        
-        <div id="playPauseButton" class="play-pause-button ">
-            <img class="heart" src="https://img.icons8.com/?size=100&id=upd5xh7hPe0R&format=png&color=000000" alt="Play/Pause Icon">
+        <div class="bottom-flap"></div>
+      </div>
+      <div class="label">Test</div>
+    </div>
+    <!-- <div class="letter-container" onclick="navigateTo('.html')">
+      <div class="letter">
+        <div class="letter-content">
+            <div class="letter-content-line"></div>
+            <div class="letter-content-line"></div>
+            <div class="letter-content-line"></div>
         </div>
-        
-        <div class="progress-bar-container">
-            <progress id="progress" value="0" max="100"></progress>
-        </div>
-        
-        <script>
-            var audio = document.getElementById("audio");
-            var playPauseButton = document.getElementById("playPauseButton");
-            var progressBar = document.getElementById("progress");
-            var sunIcon = document.querySelector(".pixel-sun");
+        <div class="bottom-flap"></div>
+      </div>
+      <div class="label">Test 2</div>
+    </div> -->
+  </div>
 
-        window.onload = function() {
-            audio.muted = false;
-        };
+  <script>
+    function navigateTo(page) {
+      window.location.href = page;
+    }
+  </script>
 
-        playPauseButton.onclick = function() {
-            if (audio.paused) {
-                audio.play();
-                playPauseButton.innerHTML = '<img src="https://img.icons8.com/?size=100&id=upd5xh7hPe0R&format=png&color=000000" alt="Pause Icon">';
-            } else {
-                audio.pause();
-                playPauseButton.innerHTML = '<img src="https://img.icons8.com/?size=100&id=upd5xh7hPe0R&format=png&color=000000" alt="Play Icon">';
-            }
-        };
-
-        audio.ontimeupdate = function() {
-            var progress = (audio.currentTime / audio.duration) * 100;
-            progressBar.value = progress;
-        };
-
-        audio.onplay = function() {
-            sunIcon.style.opacity = 1;
-        };
-
-        audio.onpause = function() {
-            sunIcon.style.opacity = 1;
-        };
-    </script>
 </body>
 </html>
