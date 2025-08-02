@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine's Day</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: url('MeAndTheMoon.jpg') no-repeat center center fixed;
+            background-size: cover;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .pixel-sun {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 25vw;
+            height: 25vw;
+            animation: sunAnimation 20s linear infinite;
+            opacity: 1;
+            z-index: 2;
+        }
+
+        .pixel-sun0 {
+            top: 50%;
+            left: 50%;
+            width: 25vw;
+            height: 25vw;
+            z-index: 1;
+        }
+
+        @keyframes sunAnimation {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .message {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 2.5vw;
+            color: #990000;
+            margin-top: 30px;
+            letter-spacing: 2px;
+            text-shadow: 
+        2px 2px 5px rgba(0, 0, 0, 0.4),  /* Black shadow for the stroke */
+        -1px -1px 2px rgba(0, 0, 0, 0.7),  /* White shadow for the outline effect */
+        1px 1px 2px rgba(0, 0, 0, 0.7); 
+        }
+
+        @media (max-width: 600px) {
+            .message {
+                font-size: 6vw;
+            }
+        }
+
+        .play-pause-button {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            cursor: pointer;
+            margin-top: 40px;
+            transition: all 0.3s ease;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .play-pause-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .play-pause-button img {
+            width: 50px;
+            height: 50px;
+        }
+
+        audio {
+            margin-top: 30px;
+            border: none;
+            outline: none;
+        }
+
+        .progress-bar-container {
+            width: 80%;
+            margin-top: 20px;
+            position: absolute;
+            bottom: 10px;
+            display: flex;
+            justify-content: center;
+        }
+
+        progress {
+            width: 100%;
+            height: 10px;
+            border-radius: 5px;
+            background: #fff;
+            color: #990000;
+            border: none;
+        }
+
+        @media (max-width: 600px) {
+            .pixel-sun {
+                width: 40vw;
+                height: 40vw;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+        <div class="container">
+            <img class="pixel-sun" src="https://img.icons8.com/?size=100&id=80502&format=png&color=000000" alt="Sun icon">
+        </div>
+        
+        <div class="message">
+            <p>
+                You Are My Sunshine<br>My only sunshine<br><br>I love you so much :))
+            </p>
+        </div>
+        
+        <audio id="audio" autoplay loop muted>
+            <source src="https://dl1.tarikhema.org/music/2021/12/07//you%20are%20my%20sunshine-Christina%20Perri.mp3" type="audio/mpeg">
+            <p>Your browser does not support the audio element. The song is "You Are My Sunshine" by Christina Perri.</p>
+        </audio>
+        
+        <div id="playPauseButton" class="play-pause-button ">
+            <img class="heart" src="https://img.icons8.com/?size=100&id=upd5xh7hPe0R&format=png&color=000000" alt="Play/Pause Icon">
+        </div>
+        
+        <div class="progress-bar-container">
+            <progress id="progress" value="0" max="100"></progress>
+        </div>
+        
+        <script>
+            var audio = document.getElementById("audio");
+            var playPauseButton = document.getElementById("playPauseButton");
+            var progressBar = document.getElementById("progress");
+            var sunIcon = document.querySelector(".pixel-sun");
+
+        window.onload = function() {
+            audio.muted = false;
+        };
+
+        playPauseButton.onclick = function() {
+            if (audio.paused) {
+                audio.play();
+                playPauseButton.innerHTML = '<img src="https://img.icons8.com/?size=100&id=upd5xh7hPe0R&format=png&color=000000" alt="Pause Icon">';
+            } else {
+                audio.pause();
+                playPauseButton.innerHTML = '<img src="https://img.icons8.com/?size=100&id=upd5xh7hPe0R&format=png&color=000000" alt="Play Icon">';
+            }
+        };
+
+        audio.ontimeupdate = function() {
+            var progress = (audio.currentTime / audio.duration) * 100;
+            progressBar.value = progress;
+        };
+
+        audio.onplay = function() {
+            sunIcon.style.opacity = 1;
+        };
+
+        audio.onpause = function() {
+            sunIcon.style.opacity = 1;
+        };
+    </script>
+</body>
+</html>

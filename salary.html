@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <title>فرم مرحله‌ای محاسبه حقوق</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap');
+    body {
+      font-family: "Vazirmatn", Tahoma, sans-serif;
+      background-color: #f4f6f9;
+      padding: 30px;
+      direction: rtl;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 24px;
+      color: #333;
+    }
+
+    .question {
+      display: none;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .question.active {
+      display: block;
+      animation: fadeIn 0.4s ease;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    select, input {
+      font-family: "Vazirmatn", Tahoma, sans-serif;
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-bottom: 12px;
+      box-sizing: border-box;
+    }
+
+    .buttons {
+      font-family: "Vazirmatn", Tahoma, sans-serif;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .buttons button {
+      font-family: "Vazirmatn", Tahoma, sans-serif;
+      flex: 1;
+      background-color: #007bff;
+      color: white;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .buttons button:hover {
+      background-color: #0056b3;
+    }
+
+    .results {
+      margin-top: 30px;
+      padding: 16px;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      background-color: #f0f8ff;
+    }
+
+    .result-item {
+      margin: 8px 0;
+      font-size: 16px;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateX(20px);}
+      to {opacity: 1; transform: translateX(0);}
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>فرم محاسبه حقوق</h2>
+
+    <div class="question active" id="q1">
+      <label>وضعیت تأهل</label>
+      <select id="maritalStatus">
+        <option value="">انتخاب کنید</option>
+        <option value="single">مجرد</option>
+        <option value="married">متأهل</option>
+      </select>
+      <div class="buttons">
+        <!-- <button disabled>قبلی</button> -->
+        <button onclick="nextStep(1)">بعدی</button>
+      </div>
+    </div>
+
+    <div class="question" id="q2">
+      <label>تعداد فرزند</label>
+      <input type="number" id="children" min="0" value="0">
+      <div class="buttons">
+        <button onclick="prevStep(2)">قبلی</button>
+        <button onclick="nextStep(2)">بعدی</button>
+      </div>
+    </div>
+
+    <div class="question" id="q3">
+      <label>آیا بیمه تکمیلی دارید؟</label>
+      <select id="insuranceSupplementary">
+        <option value="">انتخاب کنید</option>
+        <option value="yes">بله</option>
+        <option value="no">خیر</option>
+      </select>
+      <div class="buttons">
+        <button onclick="prevStep(3)">قبلی</button>
+        <button onclick="calculate()">محاسبه کن</button>
+      </div>
+    </div>
+
+    
+    <div class="results" id="results" style="display:none;">
+      <div class="result-item" id="gross"></div>
+      <div class="result-item" id="insurance"></div>
+      <div class="result-item" id="tax"></div>
+      <div class="result-item" id="supplementary"></div>
+      <div class="result-item" id="net"></div>
+      <div class="buttons">
+        <!-- <button onclick="prevStep(4)">قبلی</button> -->
+        <button onclick="location.reload()">شروع مجدد</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function nextStep(currentStep) {
+      const currentQ = document.getElementById(`q${currentStep}`);
+      const nextQ = document.getElementById(`q${currentStep + 1}`);
+
+      if (validateStep(currentStep)) {
+        currentQ.classList.remove('active');
+        nextQ.classList.add('active');
+      }
+    }
+
+    function prevStep(currentStep) {
+      const currentQ = document.getElementById(`q${currentStep}`);
+      const prevQ = document.getElementById(`q${currentStep - 1}`);
+
+      currentQ.classList.remove('active');
+      prevQ.classList.add('active');
+    }
+
+    function validateStep(step) {
+      if (step === 1) {
+        const maritalStatus = document.getElementById("maritalStatus").value;
+        if (!maritalStatus) {
+          alert("لطفاً وضعیت تأهل را انتخاب کنید.");
+          return false;
+        }
+      }
+      if (step === 2) {
+        const children = document.getElementById("children").value;
+        if (children === "") {
+          alert("لطفاً تعداد فرزند را وارد کنید.");
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function formatNumber(num) {
+      return num.toLocaleString("fa-IR");
+    }
+
+    function calculate() {
+      const maritalStatus = document.getElementById("maritalStatus").value;
+      const children = maritalStatus === 'married' ? parseInt(document.getElementById("children").value) || 0 : 0;
+      const hasSupplementary = document.getElementById("insuranceSupplementary").value === 'yes';
+
+      const baseSalary = 8112620;
+      const housing = 1500000;
+      const food = 1100000;
+      const childAllowanceRate = 0.10;
+      const insuranceRate = 0.07;
+      const taxRate = 0.10;
+      const taxExemption = 100000000;
+      const supplementaryRate = 0.05;
+
+      const childAllowance = baseSalary * childAllowanceRate * children;
+      const grossSalary = baseSalary + housing + food + childAllowance;
+      const insurance = grossSalary * insuranceRate;
+
+      const annualGross = grossSalary * 12;
+      let taxMonthly = 0;
+      if (annualGross > taxExemption) {
+        const taxableAnnual = annualGross - taxExemption;
+        taxMonthly = (taxableAnnual * taxRate) / 12;
+      }
+
+      let supplementaryDeduction = 0;
+      if (hasSupplementary) {
+        supplementaryDeduction = grossSalary * supplementaryRate;
+      }
+
+      const netSalary = grossSalary - insurance - taxMonthly - supplementaryDeduction;
+
+      document.getElementById("gross").innerText = "حقوق ناخالص: " + formatNumber(Math.round(grossSalary)) + " ریال";
+      document.getElementById("insurance").innerText = "بیمه (۷٪): " + formatNumber(Math.round(insurance)) + " ریال";
+      document.getElementById("tax").innerText = "مالیات: " + formatNumber(Math.round(taxMonthly)) + " ریال";
+      document.getElementById("supplementary").innerText = "بیمه تکمیلی: " + formatNumber(Math.round(supplementaryDeduction)) + " ریال";
+      document.getElementById("net").innerText = "حقوق خالص: " + formatNumber(Math.round(netSalary)) + " ریال";
+
+      document.getElementById("q3").classList.remove('active');
+      document.getElementById("results").style.display = "block";
+    }
+  </script>
+
+</body>
+</html>
