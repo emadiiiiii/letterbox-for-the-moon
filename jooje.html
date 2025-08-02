@@ -12,9 +12,22 @@
       background: #cceeff;
       display: flex;
       flex-direction: column;
-      justify-content: flex-end;
       align-items: center;
       height: 100vh;
+    }
+
+    #hud {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      font-size: 1.5rem;
+      background: rgba(255, 255, 255, 0.7);
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 10;
     }
 
     #game-area {
@@ -45,24 +58,12 @@
       justify-content: center;
       gap: 2rem;
       padding: 1rem;
-    }
-
-    #hud {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      padding: 0.5rem 1rem;
-      font-size: 1.2rem;
-      font-family: sans-serif;
-      background-color: rgba(255, 255, 255, 0.5);
+      flex-wrap: wrap;
     }
 
     button {
       padding: 1rem 2rem;
-      font-size: 1.5rem;
+      font-size: 1.2rem;
       border-radius: 10px;
       border: none;
       background: #ffcc00;
@@ -80,15 +81,26 @@
     #play-button {
       font-size: 1.5rem;
       margin: 1rem;
-      align-self: center;
+    }
+
+    @media (max-width: 600px) {
+      button {
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+      }
+
+      #hud {
+        font-size: 1rem;
+      }
     }
   </style>
 </head>
 <body>
   <div id="hud">
-    <div>Hearts Collected: <span id="score">0</span></div>
+    <span id="heart-counter">❤️ 0</span>
     <button id="pause-button">⏸️ Pause</button>
   </div>
+
   <div id="game-area">
     <img id="chick" src="media/chick_still.png" alt="Chick" />
   </div>
@@ -100,7 +112,7 @@
     <button id="right">Right ➡️</button>
   </div>
 
-  <audio id="bg-music" src="media/jooje.mp3"></audio>
+  <audio id="bg-music" src="media/jooje.mp3" loop></audio>
 
   <script>
     const chick = document.getElementById('chick');
@@ -111,17 +123,16 @@
     const pauseButton = document.getElementById('pause-button');
     const bgMusic = document.getElementById('bg-music');
     const gameArea = document.getElementById('game-area');
-    const scoreDisplay = document.getElementById('score');
+    const heartCounter = document.getElementById('heart-counter');
 
     let position = 100;
     let walkTimer = null;
     let walkToggle = false;
     let direction = 'still';
     let heartInterval = null;
-    let isPaused = false;
-    let score = 0;
     const maxHearts = 3;
-    const hearts = [];
+    let gamePaused = false;
+    let heartCount = 0;
 
     const updateChickImage = (dir) => {
       if (dir === 'left') {
@@ -135,7 +146,6 @@
     };
 
     const move = (dir) => {
-      if (isPaused) return;
       direction = dir;
       if (!walkTimer) {
         walkTimer = setInterval(() => {
@@ -157,26 +167,34 @@
       updateChickImage('still');
     };
 
+    const fadeAudio = (targetVolume, callback) => {
+      const step = 0.05;
+      const interval = 75;
+      const fade = setInterval(() => {
+        const currentVolume = bgMusic.volume;
+        if ((targetVolume < currentVolume && currentVolume <= step) ||
+            (targetVolume > currentVolume && currentVolume >= 1 - step)) {
+          bgMusic.volume = targetVolume;
+          clearInterval(fade);
+          if (callback) callback();
+        } else {
+          bgMusic.volume += (targetVolume - currentVolume) * step;
+        }
+      }, interval);
+    };
+
     const enableControls = () => {
       controls.style.display = 'flex';
       playButton.style.display = 'none';
+      bgMusic.volume = 0;
       bgMusic.play();
-      heartInterval = setInterval(spawnHeart, 3000);
+      fadeAudio(1);
+      heartInterval = setInterval(spawnHeart, 2500);
       requestAnimationFrame(updateGame);
     };
 
-    const togglePause = () => {
-      isPaused = !isPaused;
-      if (isPaused) {
-        bgMusic.pause();
-      } else {
-        bgMusic.play();
-        requestAnimationFrame(updateGame);
-      }
-    };
-
     const spawnHeart = () => {
-      if (isPaused) return;
+      if (gamePaused) return;
       const currentHearts = document.querySelectorAll('.heart');
       if (currentHearts.length >= maxHearts) return;
 
@@ -186,27 +204,28 @@
       heart.style.left = Math.random() * (window.innerWidth - 32) + 'px';
       heart.style.top = '0px';
       gameArea.appendChild(heart);
-      hearts.push(heart);
     };
 
     const updateGame = () => {
-      if (isPaused) return;
-      hearts.forEach((heart, index) => {
-        const top = parseFloat(heart.style.top);
-        if (top >= window.innerHeight - 64) {
-          heart.remove();
-          hearts.splice(index, 1);
-        } else {
-          heart.style.top = top + 2 + 'px';
-        }
-      });
-      checkHeartCollision();
+      if (!gamePaused) {
+        const hearts = document.querySelectorAll('.heart');
+        hearts.forEach((heart) => {
+          const top = parseFloat(heart.style.top);
+          if (top >= window.innerHeight - 64) {
+            heart.remove();
+          } else {
+            heart.style.top = top + 2 + 'px';
+          }
+        });
+        checkHeartCollision();
+      }
       requestAnimationFrame(updateGame);
     };
 
     const checkHeartCollision = () => {
       const chickRect = chick.getBoundingClientRect();
-      hearts.forEach((heart, index) => {
+      const hearts = document.querySelectorAll('.heart');
+      hearts.forEach((heart) => {
         const heartRect = heart.getBoundingClientRect();
         if (
           chickRect.left < heartRect.right &&
@@ -215,15 +234,24 @@
           chickRect.top < heartRect.bottom
         ) {
           heart.remove();
-          hearts.splice(index, 1);
-          score++;
-          scoreDisplay.textContent = score;
+          heartCount++;
+          heartCounter.textContent = `❤️ ${heartCount}`;
         }
       });
     };
 
-    playButton.addEventListener('click', enableControls);
+    const togglePause = () => {
+      gamePaused = !gamePaused;
+      if (gamePaused) {
+        fadeAudio(0, () => bgMusic.pause());
+      } else {
+        bgMusic.play();
+        fadeAudio(1);
+      }
+    };
+
     pauseButton.addEventListener('click', togglePause);
+    playButton.addEventListener('click', enableControls);
 
     leftBtn.addEventListener('touchstart', (e) => { e.preventDefault(); move('left'); });
     rightBtn.addEventListener('touchstart', (e) => { e.preventDefault(); move('right'); });
