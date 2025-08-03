@@ -2,7 +2,8 @@
 <html lang="en" >
 <head>
   <link rel="manifest" href="manifest.json" />
-<meta name="theme-color" content="#88cc88" />
+  <meta name="theme-color" content="#ffcc00" />
+  <link rel="apple-touch-icon" href="media/icon-192.png" />
   <meta charset="UTF-8">
   <title>نامه‌ها</title>
   <style>
@@ -176,10 +177,8 @@
   </script>
 
   <script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js')
-      .then(reg => console.log('SW registered', reg))
-      .catch(err => console.error('SW registration failed', err));
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("service-worker.js");
   }
 </script>
 
