@@ -2,13 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="media/chick_right.png" />
+
+  <meta name="viewport" content=" initial-scale=1.0" />
   <title>جوجه ی من ^^</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap');
     body {
       margin: 0;
       padding: 0;
       overflow: hidden;
+      font-family: "Vazirmatn", Tahoma, sans-serif;
       background: #cceeff;
       display: flex;
       flex-direction: column;
@@ -17,18 +21,20 @@
     }
 
     #hud {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.5rem 1rem;
-      font-size: 1.5rem;
-      background: rgba(255, 255, 255, 0.7);
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: 10;
-    }
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  font-size: 1.5rem;
+  background: rgba(255, 255, 255, 0.7);
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  box-sizing: border-box;
+}
+
 
     #game-area {
       position: relative;
@@ -59,12 +65,14 @@
       gap: 2rem;
       padding: 1rem;
       flex-wrap: wrap;
+      flex-direction: row;
     }
 
     button {
       padding: 1rem 2rem;
       font-size: 1.2rem;
       border-radius: 10px;
+      font-family: "Vazirmatn", Tahoma, sans-serif;
       border: none;
       background: #ffcc00;
       color: #000;
@@ -77,6 +85,47 @@
       transform: translateY(2px);
       box-shadow: 0 2px #cc9900;
     }
+
+    #heart-counter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+#heart-counter img {
+  width: 20px;
+
+}
+
+.controls button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  box-shadow: none;
+  border-radius: 0;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.controls button img {
+  width: 100%;
+  height: auto;
+  pointer-events: none; /* تا فقط خود دکمه کلیک بشه نه تصویر داخلش */
+}
+
+.controls button:active {
+  transform: scale(0.95);
+}
+
+.flipped {
+  transform: scaleX(-1);
+}
+
+
 
     #play-button {
       font-size: 1.5rem;
@@ -92,12 +141,94 @@
       #hud {
         font-size: 1rem;
       }
+      #overlay {
+      position: absolute;
+      z-index: 999;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.95);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5rem;
+      text-align: center;
+    }
+
+#overlay h1 {
+  margin-bottom: 1rem;
+}
+
+
+
+@media (max-width: 600px) {
+  #overlay {
+    font-size: 1.1rem;
+    padding: 1rem;
+  }
+}
+#game-over-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  flex-direction: column;
+  font-size: 1.5rem;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  pointer-events: none;
+}
+#game-over-overlay.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+.game-over-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.broken-heart {
+  width: 100px;
+  height: auto;
+}
+
     }
   </style>
 </head>
+<div id="game-over-overlay" style="display: none;">
+  <div class="game-over-box">
+    <img src="media/broken_heart.png" alt="Broken Heart" class="broken-heart" />
+    <p>قلبمو شکستی :(((</p>
+    <button id="retry-button">یه فرصت دیگه</button>
+  </div>
+</div>
+
 <body>
+  <div id="overlay" dir="rtl">
+    <img src="media/chick_right.png" alt="جوجه" width="100rem">
+    <h1>شلام جوجه‌ی من :)) </h1>
+    <p>روی "باجی کنم" کلیک کن تا شروع کنیم!</p>
+    <button id="play-button" >باجی کنم</button>
+  </div>
+
   <div id="hud">
-    <span id="heart-counter">گلب 0</span>
+    <div id="heart-counter" class="align-items">
+      
+      <img src="media/heart.png" alt="گلب"  > 
+      <span >
+      0</span>
+    </div>
     <button id="pause-button">خسته جدم</button>
   </div>
 
@@ -105,16 +236,21 @@
     <img id="chick" src="media/chick_still.png" alt="Chick" />
   </div>
 
-  <button id="play-button">باجی کنم</button>
 
   <div class="controls">
-    <button id="left">⬅️</button>
-    <button id="right">➡️</button>
-  </div>
+  <button id="left"><img src="media/arrow_left.png" alt="left" /></button>
+  <button id="right"><img src="media/arrow_left.png" class="flipped" alt="right" /></button>
+</div>
+
 
   <audio id="bg-music" src="media/jooje.mp3" loop></audio>
+  <audio id="eat-sound" src="media/eat.wav"></audio>
+<audio id="heartbreak-sound" src="media/heartbreak.wav"></audio>
+
 
   <script>
+    const gameOverOverlay = document.getElementById('game-over-overlay');
+    const retryButton = document.getElementById('retry-button');
     const chick = document.getElementById('chick');
     const leftBtn = document.getElementById('left');
     const rightBtn = document.getElementById('right');
@@ -124,7 +260,10 @@
     const bgMusic = document.getElementById('bg-music');
     const gameArea = document.getElementById('game-area');
     const heartCounter = document.getElementById('heart-counter');
+    const eatSound = document.getElementById('eat-sound');
+    const heartbreakSound = document.getElementById('heartbreak-sound');
 
+    let heartFallSpeed = 2; 
     let position = 100;
     let walkTimer = null;
     let walkToggle = false;
@@ -133,6 +272,14 @@
     const maxHearts = 3;
     let gamePaused = false;
     let heartCount = 0;
+
+    const endGame = () => {
+      gamePaused = true;
+      fadeAudio(0, () => bgMusic.pause());
+      gameOverOverlay.style.display = 'flex';
+      gameOverOverlay.classList.add('visible');
+    };
+
 
     const updateChickImage = (dir) => {
       if (dir === 'left') {
@@ -184,6 +331,10 @@
     };
 
     const enableControls = () => {
+      position = (window.innerWidth - 64) / 2;
+      chick.style.left = position + 'px';
+
+      document.getElementById('overlay').style.display = 'none';
       controls.style.display = 'flex';
       playButton.style.display = 'none';
       bgMusic.volume = 0;
@@ -213,10 +364,14 @@
           const top = parseFloat(heart.style.top);
           if (top >= window.innerHeight - 64) {
             heart.remove();
+            heartbreakSound.currentTime = 0;
+            heartbreakSound.play();
+            endGame();
           } else {
-            heart.style.top = top + 2 + 'px';
+            heart.style.top = top + heartFallSpeed  + 'px';
           }
         });
+        
         checkHeartCollision();
       }
       requestAnimationFrame(updateGame);
@@ -234,8 +389,12 @@
           chickRect.top < heartRect.bottom
         ) {
           heart.remove();
+          eatSound.currentTime = 0;
+          eatSound.play();
           heartCount++;
-          heartCounter.textContent = `❤️ ${heartCount}`;
+          heartCounter.innerHTML = `<img src="media/heart.png" alt="گلب" width="20px"> ${heartCount}`;
+          heartFallSpeed = 2 + (heartCount % 5 === 0 ? 0.2 : 0); 
+          
         }
       });
     };
@@ -243,12 +402,30 @@
     const togglePause = () => {
       gamePaused = !gamePaused;
       if (gamePaused) {
+        pauseButton.textContent = 'باجی کنم';
         fadeAudio(0, () => bgMusic.pause());
       } else {
+        pauseButton.textContent = 'خسته جدم';
         bgMusic.play();
         fadeAudio(1);
       }
-    };
+    };  
+
+    retryButton.addEventListener('click', () => {
+      document.querySelectorAll('.heart').forEach((heart) => heart.remove());
+      position = (window.innerWidth - 64) / 2;
+      chick.style.left = position + 'px';
+      updateChickImage('still');
+      heartCount = 0;
+      heartCounter.innerHTML = `<img src="media/heart.png" width="20px"> ${heartCount}`;
+      gameOverOverlay.classList.remove('visible');
+      gameOverOverlay.style.display = 'none';
+      bgMusic.currentTime = 0;
+      bgMusic.play();
+      fadeAudio(1);
+      gamePaused = false;
+    });
+
 
     pauseButton.addEventListener('click', togglePause);
     playButton.addEventListener('click', enableControls);
@@ -258,6 +435,7 @@
 
     leftBtn.addEventListener('mousedown', () => move('left'));
     rightBtn.addEventListener('mousedown', () => move('right'));
+
 
     leftBtn.addEventListener('mouseup', stop);
     rightBtn.addEventListener('mouseup', stop);
