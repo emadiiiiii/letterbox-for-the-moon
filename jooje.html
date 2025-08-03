@@ -426,6 +426,36 @@
       gamePaused = false;
     });
 
+    gameArea.addEventListener('touchstart', (e) => {
+      if (gamePaused) return;
+
+      const touchX = e.touches[0].clientX;
+      const middle = window.innerWidth / 2;
+
+      if (touchX < middle) {
+        move('left');
+      } else {
+        move('right');
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (gamePaused) return;
+
+      if (e.key === 'ArrowLeft') {
+        move('left');
+      } else if (e.key === 'ArrowRight') {
+        move('right');
+      }
+    });
+
+    document.addEventListener('keyup', (e) => {
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        stop();
+      }
+    });
+
+    gameArea.addEventListener('touchend', stop);
 
     pauseButton.addEventListener('click', togglePause);
     playButton.addEventListener('click', enableControls);
