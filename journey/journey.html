@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Our Story 🌅</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      scroll-snap-type: y mandatory;
+    }
+    section {
+      scroll-snap-align: start;
+      height: 100vh;
+      position: relative;
+      opacity: 0;
+      transform: scale(0.98);
+      transition: opacity 1.5s ease-in-out, transform 1.5s ease-in-out;
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+    section.visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .glass {
+      backdrop-filter: blur(10px);
+      background: rgba(255,255,255,0.65);
+      transition: background 0.4s ease;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      section { transition: none; background-attachment: scroll; }
+    }
+  </style>
+</head>
+<body class="font-sans bg-black text-white overflow-x-hidden">
+
+  <!-- Timeline sections -->
+  <div id="timeline"></div>
+
+  <script>
+    const timeline = document.getElementById("timeline");
+
+    const sections = [
+      { image: "assets/1.png", date: "Aug 22, 2024", text: "The day we met — two coffees, one long walk, and a feeling we couldn’t shake." },
+      { image: "assets/2.png", date: "Sep 10, 2024", text: "First date — laughter over lattes, and the world outside got quiet." },
+      { image: "assets/3.png", date: "Oct 5, 2024", text: "Sunset at the lake — our hearts spoke without words." },
+      { image: "assets/4.png", date: "Dec 2, 2024", text: "First trip — wrong turns, right person." },
+      { image: "assets/1.png", date: "Jan 18, 2025", text: "A promise — to keep showing up for each other every day." }
+    ];
+
+    sections.forEach(({ image, date, text }) => {
+      const section = document.createElement("section");
+      section.style.backgroundImage = `url('${image}')`;
+      section.innerHTML = `
+        <div class="absolute inset-0 flex items-center justify-center px-6">
+          <div class="glass max-w-xl p-6 rounded-xl text-center shadow-xl">
+            <h2 class="text-2xl font-semibold mb-2 text-black">${date}</h2>
+            <p class="text-lg text-black">${text}</p>
+          </div>
+        </div>`;
+      timeline.appendChild(section);
+    });
+
+    const allSections = document.querySelectorAll("section");
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        entry.target.classList.toggle("visible", entry.isIntersecting);
+      });
+    }, { threshold: 0.6 });
+
+    allSections.forEach(section => observer.observe(section));
+  </script>
+</body>
+</html>
