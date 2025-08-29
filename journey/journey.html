@@ -6,16 +6,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap');
     html, body {
+      font-family: "Vazirmatn", Tahoma, sans-serif;
       margin: 0;
       padding: 0;
       background-color: black;
       overflow-x: hidden;
     }
     section {
+      font-family: "Vazirmatn", Tahoma, sans-serif;
       height: 100vh;
       position: relative;
-      background-size: cover;
+      background-size: auto 100%;
       background-position: center;
       background-repeat: no-repeat;
       background-attachment: fixed; /* Parallax effect */
@@ -31,104 +34,42 @@
       pointer-events: none;
     }
 
-    section::before {
-      left: 0;
-      background: linear-gradient(to right, black, transparent);
-    }
-
-    section::after {
-      right: 0;
-      background: linear-gradient(to left, black, transparent);
-    }
-
-    section::before,
-section::after,
-section::backdrop-top,
-section::backdrop-bottom {
-  content: "";
-  position: absolute;
-  z-index: 1;
-  pointer-events: none;
+.glass {
+  backdrop-filter: blur(1px);
+  background: rgba(255,255,255,0.6);
 }
-
-section::before {
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 20%;
-  background: linear-gradient(to right, black, transparent);
+@media (prefers-reduced-motion: reduce) {
+  section {
+    background-attachment: scroll;
+  }
 }
-
-section::after {
-  right: 0;
-  top: 0;
-  bottom: 0;
-  width: 20%;
-  background: linear-gradient(to left, black, transparent);
-}
-
-section::backdrop-top {
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 20%;
-  background: linear-gradient(to bottom, black, transparent);
-}
-
-section::backdrop-bottom {
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 20%;
-  background: linear-gradient(to top, black, transparent);
-}
-
-.fade-top, .fade-bottom {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 20%;
-  z-index: 1;
-  pointer-events: none;
-}
-
-.fade-top {
-  top: 0;
-  background: linear-gradient(to bottom, black, transparent);
-}
-
-.fade-bottom {
-  bottom: 0;
-  background: linear-gradient(to top, black, transparent);
-}
-
-
-    .glass {
-      backdrop-filter: blur(10px);
-      background: rgba(255,255,255,0.65);
-    }
-    @media (prefers-reduced-motion: reduce) {
-      section {
-        background-attachment: scroll;
-      }
-    }
   </style>
 </head>
-<body class="font-sans text-white">
+<body class="font-sans text-white overflow-x-hidden" dir="rtl">
 
-  <div id="timeline"></div>
+    <div id="timeline"></div>
+
 
   <script>
     const timeline = document.getElementById("timeline");
 
     const sections = [
-      { image: "assets/1.jpg", date: "Aug 22, 2024", text: "The day we met — two coffees, one long walk, and a feeling we couldn’t shake." },
-      { image: "assets/2.jpg", date: "Sep 10, 2024", text: "First date — laughter over lattes, and the world outside got quiet." },
-      { image: "assets/1.jpg", date: "Oct 5, 2024", text: "Sunset at the lake — our hearts spoke without words." },
-      { image: "assets/2.jpg", date: "Dec 2, 2024", text: "First trip — wrong turns, right person." },
-      { image: "assets/1.jpg", date: "Jan 18, 2025", text: "A promise — to keep showing up for each other every day." },
-      { image: "assets/2.jpg", date: "Jan 18, 2025", text: "A promise — to keep showing up for each other every day." },
-      { image: "assets/1.jpg", date: "Jan 18, 2025", text: "A promise — to keep showing up for each other every day." },
+      { image: "assets/1.jpg", text: "همه چیز از اینجا شروع شد" },
+      { image: "assets/2.jpg", text: "دیت دوم رفتیم وینگ استاپ عین روانیا" },
+      { image: "assets/3.jpg", text: "متوجه شدیم هردومون دوست داریم غذا بخوریم" },
+      { image: "assets/4.jpg", text: "پس خذا غوردیم" },
+      { image: "assets/5.jpg", text: "مخاذ دورغیذ" },
+      { image: "assets/6.jpg", text: "سیباذ دویلبییذ" },
+      { image: "assets/7.jpg", text: "سخذث لیاعبود" },
+      { image: "assets/8.jpg", text: "غذا درست کردیم" },
+      { image: "assets/9.jpg", text: "و بازم خوردیم" },
+      { image: "assets/10.jpg", text: "هی درست کردیم" },
+      { image: "assets/11.jpg", text: "هی خوردیم" },
+      { image: "assets/12.jpg", text: "خیلی خوردیم" },
+      { image: "assets/13.jpg", text: "فکر می‌کنی سیر شدیم؟" },
+      { image: "assets/14.jpg", text: "نه، ما بازم خوردیم" },
+      { image: "assets/13.jpg", text: "." },
+      { image: "assets/13.jpg", text: "." },
 
     ];
 
@@ -136,14 +77,12 @@ section::backdrop-bottom {
       const section = document.createElement("section");
       section.style.backgroundImage = `url('${image}')`;
       section.innerHTML = `
-      <div class="fade-top"></div>
-  <div class="fade-bottom"></div>
-  <div class="absolute inset-0 flex items-center justify-center px-6">
-    <div class="glass max-w-xl p-6 rounded-xl text-center shadow-xl">
-      <h2 class="text-2xl font-semibold mb-2 text-black">Date</h2>
-      <p class="text-lg text-black">Text</p>
+  <div class="absolute inset-0 flex items-end justify-center px-6 pb-12">
+    <div class="glass max-w-xl p-3 rounded-xl text-center shadow-xl">
+      <p class="text-md font-bold text-black">${text}</p>
     </div>
   </div>`;
+
       timeline.appendChild(section);
     });
   </script>
