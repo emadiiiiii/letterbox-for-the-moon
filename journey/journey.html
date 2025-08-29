@@ -7,6 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap');
+
     html, body {
       font-family: "Vazirmatn", Tahoma, sans-serif;
       margin: 0;
@@ -21,34 +22,60 @@
       background-size: auto 100%;
       background-position: center;
       background-repeat: no-repeat;
-      background-attachment: fixed; /* Parallax effect */
+      background-attachment: fixed;
+      opacity: 0;
+      transition: opacity 1s ease-in-out; /* smooth fade */
     }
-    section::before,
-    section::after {
-      content: "";
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      width: 20%;
-      z-index: 1;
-      pointer-events: none;
+    section.visible {
+      opacity: 1;
     }
-
-.glass {
-  backdrop-filter: blur(1px);
-  background: rgba(255,255,255,0.6);
-}
-@media (prefers-reduced-motion: reduce) {
-  section {
-    background-attachment: scroll;
-  }
-}
+    .fade-top, .fade-bottom {
+      
+    }
+   
+    .glass {
+      backdrop-filter: blur(10px);
+      background: rgba(255,255,255,0.65);
+      box-shadow: 0 0 20px rgba(255, 150, 168, 0.72); /* soft glowing border */
+    }
+    /* Floating hearts animation */
+    .heart {
+      position: fixed;
+      bottom: -20px;
+      font-size: 20px;
+      animation: floatUp 6s linear infinite;
+      opacity: 0.8;
+      z-index: 50;
+    }
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(1); opacity: 0.8; }
+      50% { opacity: 1; }
+      100% { transform: translateY(-120vh) scale(1.5); opacity: 0; }
+    }
   </style>
 </head>
-<body class="font-sans text-white overflow-x-hidden" dir="rtl">
+<body class="font-sans text-white bg-black overflow-x-hidden">
 
-    <div id="timeline"></div>
+  <!-- Music Toggle Button -->
+  <button id="music-btn" class="fixed top-4 right-4 z-50 bg-pink-500 hover:bg-pink-600 text-white px-3 py-2 rounded-full shadow-lg">
+    🎶
+  </button>
+  <audio id="bg-music" loop>
+    <source src="assets/music.mp3" type="audio/mpeg">
+  </audio>
 
+  <!-- Timeline -->
+   <nav dir="rtl">  
+
+     <div id="timeline"></div>
+    </nav>
+
+  <!-- Progress bar with emoji markers -->
+  <div id="progress-container" class="fixed bottom-0 left-0 w-full h-4 bg-gray-800 z-40">
+    <div id="progress-bar" class="h-4 bg-pink-500 relative" style="width: 0%;">
+      
+    </div>
+  </div>
 
   <script>
     const timeline = document.getElementById("timeline");
@@ -68,23 +95,137 @@
       { image: "assets/12.jpg", text: "خیلی خوردیم" },
       { image: "assets/13.jpg", text: "فکر می‌کنی سیر شدیم؟" },
       { image: "assets/14.jpg", text: "نه، ما بازم خوردیم" },
-      { image: "assets/13.jpg", text: "." },
-      { image: "assets/13.jpg", text: "." },
+      { image: "assets/15.jpg", text: "خب، یه کم برگردیم عقب..." },
+      { image: "assets/16.jpg", text: "اینجا بود که از عشق بی‌پایانت نسبت به من مطلع شدی" },
+      { image: "assets/17.jpg", text: "پس بوسم کردی" },
+      { image: "assets/18.jpg", text: "بوسم کلدی" },
+      { image: "assets/19.jpg", text: "بعدش گازم گرفتی" },
+      { image: "assets/20.jpg", text: "ولی من بوست کلدم ^^" },
+      { image: "assets/21.jpg", text: "بازم بوسم کردی" },
+      { image: "assets/22.jpg", text: "بوسسسس" },
+      { image: "assets/23.jpg", text: "بوج بوج" },
+      { image: "assets/24.jpg", text: "حتی وقتی شبیه ماست بودم بوسم کلدی" },
+      { image: "assets/25.jpg", text: "بوج بوجی" },
+      { image: "assets/26.jpg", text: "بعضی وقتام کتکم می‌زدی" },
+      { image: "assets/27.jpg", text: "ولی بعدش سریع بوسم می‌کردی" },
+      { image: "assets/28.jpg", text: "منم بوست می‌کردم" },
+      { image: "assets/29.jpg", text: "بوس" },
+      { image: "assets/30.jpg", text: "اون اوایل من نمیدونستم که تو خلی" },
+      { image: "assets/31.jpg", text: "بعد که فهمیدم خیلی باهات وایب کردم" },
+      { image: "assets/32.jpg", text: "و تصمیم گرفتم" },
+      { image: "assets/33.jpg", text: "که" },
+      { image: "assets/34.jpg", text: "با هم" },
+      { image: "assets/35.jpg", text: "خل" },
+      { image: "assets/36.jpg", text: "و چل" },
+      { image: "assets/37.jpg", text: "باشیم" },
+      { image: "assets/38.jpg", text: "با جوونا" },
+      { image: "assets/39.jpg", text: "پارتی کردیم" },
+      { image: "assets/40.jpg", text: "و ترکیدیم" },
+      { image: "assets/41.jpg", text: "ولی با هم بودیم" },
+      { image: "assets/42.jpg", text: "هرچی هم که خسته" },
+      { image: "assets/43.jpg", text: "ولی با هم" },
+      { image: "assets/44.jpg", text: "با هم" },
+      { image: "assets/45.jpg", text: "با هم" },
+      { image: "assets/46.jpg", text: "تو جنگ" },
+      { image: "assets/47.jpg", text: "تو دلخوری" },
+      { image: "assets/49.jpg", text: "تو خوشحالی" },
+      { image: "assets/50.jpg", text: "با هم" },
+      { image: "assets/51.jpg", text: "با هم" },
+      { image: "assets/52.jpg", text: "با" },
+      { image: "assets/53.jpg", text: "هم" },
+      { image: "assets/54.jpg", text: "با هم" },
+      { image: "assets/55.jpg", text: "با هم" },
+      { image: "assets/56.jpg", text: "تو مریضی و سلامتی" },
+      { image: "assets/57.jpg", text: "تو خواب و بیداری " },
+      { image: "assets/58.jpg", text: "تو هر ارتفاعی از سطح دریا" },
+      { image: "assets/60.jpg", text: "تو بودی همراه" },
+      { image: "assets/61.jpg", text: "تو" },
+      { image: "assets/67.jpg", text: "بودی" },
+      { image: "assets/62.jpg", text: "همراه" },
+      { image: "assets/65.jpg", text: "همیشه" },
+      { image: "assets/66.jpg", text: "و" },
+      { image: "assets/64.jpg", text: "همه‌جا" },
+      { image: "assets/63.jpg", text: "(خیلی دلم میخواست آریای اوقی باشه تو عکسامون )" },
+      
+      { image: "assets/68.jpg", text: "و این تازه شروعشه..." }
 
     ];
 
-    sections.forEach(({ image, date, text }) => {
-      const section = document.createElement("section");
-      section.style.backgroundImage = `url('${image}')`;
-      section.innerHTML = `
-  <div class="absolute inset-0 flex items-end justify-center px-6 pb-12">
-    <div class="glass max-w-xl p-3 rounded-xl text-center shadow-xl">
-      <p class="text-md font-bold text-black">${text}</p>
-    </div>
-  </div>`;
+  sections.forEach(({ image, text }, index) => {
+  const section = document.createElement("section");
+  section.style.backgroundImage = `url('${image}')`;
+  
+  if (index === sections.length - 1) {
+    section.innerHTML = `
+      <div class="absolute inset-0 flex items-end justify-center mb-6 px-6">
+        <div class="glass w-full max-w-md mx-0 p-8 rounded-2xl text-center shadow-xl font-bold ">
+          <p class="text-lg text-gray-800 mb-4">عزیز دلم، خوشحال‌ترین آدم دنیا هستم که تونستم یک سال در کنارت باشم و تونستیم تمام سختیا و مشکلات رو با هم کنار بزنیم و با هم خاطرات به این خوشی رو رقم بزنیم</p>
+          <p class="text-2xl text-pink-600">❤️ ${text} ❤️</p>
+        </div>
+      </div>
+    `;
+  } else {
+    section.innerHTML = `
+      <div class="absolute inset-0 flex items-end justify-center px-6 pb-12">
+        <div class="glass w-full max-w-md mx-0 p-6 rounded-xl text-center shadow-xl font-bold">
+          <p class="text-2xl text-black">${text}</p>
+        </div>
+      </div>
+    `;
+  }
 
-      timeline.appendChild(section);
+  timeline.appendChild(section);
+});
+
+
+    // Fade-in effect on scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll("section").forEach(section => observer.observe(section));
+
+    // Progress bar update
+    window.addEventListener("scroll", () => {
+      const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const progress = (scrollTop / scrollHeight) * 100;
+      document.getElementById("progress-bar").style.width = progress + "%";
     });
+
+    // Music button toggle
+    const musicBtn = document.getElementById("music-btn");
+    const bgMusic = document.getElementById("bg-music");
+    let isPlaying = false;
+    musicBtn.addEventListener("click", () => {
+      if (isPlaying) {
+        bgMusic.pause();
+        musicBtn.textContent = "🎶";
+      } else {
+        bgMusic.play();
+        musicBtn.textContent = "⏸️";
+      }
+      isPlaying = !isPlaying;
+    });
+
+    // Floating hearts generator
+    function createHeart() {
+      const heart = document.createElement("div");
+      heart.classList.add("heart");
+      heart.style.left = Math.random() * 100 + "vw";
+      heart.style.animationDuration = (3 + Math.random() * 3) + "s";
+      heart.textContent = "❤️";
+      document.body.appendChild(heart);
+
+      setTimeout(() => {
+        heart.remove();
+      }, 6000);
+    }
+    setInterval(createHeart, 800);
   </script>
 </body>
 </html>
