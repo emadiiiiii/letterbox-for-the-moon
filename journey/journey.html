@@ -50,6 +50,26 @@
       50% { opacity: 1; }
       100% { transform: translateY(-120vh) scale(1.5); opacity: 0; }
     }
+
+    .chick {
+  position: fixed;
+  bottom: 40px;
+  width: 80px;
+  height: auto;
+  z-index: 20; /* chick stays behind */
+}
+
+.beak-heart {
+  position: fixed;
+  font-size: 24px;
+  z-index: 30; /* hearts always above chick */
+  pointer-events: none;
+}
+
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(-20deg) translateY(0); }
+    50% { transform: rotate(-10deg) translateY(-3px); }
+  }
   </style>
 </head>
 <body class="font-sans text-white bg-black overflow-x-hidden">
@@ -74,6 +94,80 @@
       
     </div>
   </div>
+
+  <script>
+    const chick = document.createElement("img");
+    chick.classList.add("chick");
+    chick.src = "assets/chick_still.png"; // default still chick
+    document.body.appendChild(chick);
+  
+    let chickX = -100; // start off-screen
+    let direction = 1;
+    const beakHearts = [];
+    let stepFrame = 0; // frame counter
+    let legToggle = true; // alternate between left/right
+  
+    function moveChick() {
+      const screenWidth = window.innerWidth;
+      chickX += direction * 5;
+  
+      chick.style.left = chickX + "px";
+      chick.style.transform = direction === 1 ? "scaleX(1)" : "scaleX(-1)";
+  
+      // Skip animation: alternate left/right no matter the direction
+      stepFrame++;
+      if (stepFrame % 1 === 0) { // adjust "skip" speed
+        if (chick.src.includes("still")) {
+          chick.src = legToggle ? "assets/chick_left.png" : "assets/chick_right.png";
+          legToggle = !legToggle;
+        } else {
+          chick.src = "assets/chick_still.png";
+        }
+      }
+  
+      // Reset when off screen
+      if (chickX > screenWidth + 100 || chickX < -100) {
+        beakHearts.forEach(h => h.remove());
+        beakHearts.length = 0;
+        direction *= -1; // flip direction
+      }
+  
+      // Catch falling hearts
+      document.querySelectorAll(".heart").forEach((heart) => {
+        const rect = heart.getBoundingClientRect();
+        const chickRect = chick.getBoundingClientRect();
+  
+        if (
+          rect.bottom > chickRect.top &&
+          rect.left < chickRect.right &&
+          rect.right > chickRect.left &&
+          rect.top < chickRect.bottom
+        ) {
+          // Attach heart to chick's beak
+          // Attach heart to chick's beak
+heart.remove();
+const beakHeart = document.createElement("div");
+beakHeart.classList.add("beak-heart");
+beakHeart.textContent = "❤️";
+document.body.appendChild(beakHeart); // append directly to body, not inside chick
+beakHeart.style.left = chickX + 30 + "px";
+beakHeart.style.bottom = "60px";
+beakHearts.push(beakHeart);
+
+        }
+      });
+  
+      // Move beak hearts with chick
+      beakHearts.forEach((h, i) => {
+        h.style.left = chickX + 35 + (i * 10) + "px";
+      });
+    }
+  
+    setInterval(moveChick, 100);
+  </script>
+  
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
   <script>
     const timeline = document.getElementById("timeline");
@@ -178,13 +272,45 @@
 
 
     // Fade-in effect on scroll
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("visible");
+    // Fade-in effect on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("visible");
+
+        // 🎉 Fire confetti if it's the last section
+        if (entry.target === document.querySelector("section:last-child")) {
+          launchConfetti();
         }
-      });
-    }, { threshold: 0.1 });
+      }
+    });
+  }, { threshold: 0.5 });
+
+  function launchConfetti() {
+  const duration = 5 * 1000; // 5 seconds
+  const end = Date.now() + duration;
+
+  (function frame() {
+    confetti({
+      particleCount: 4,
+      angle: 60,
+      spread: 55,
+      origin: { x: 0 }
+    });
+    confetti({
+      particleCount: 4,
+      angle: 120,
+      spread: 55,
+      origin: { x: 1 }
+    });
+
+    if (Date.now() < end) {
+      requestAnimationFrame(frame);
+    }
+  })();
+}
+
+
 
     document.querySelectorAll("section").forEach(section => observer.observe(section));
 
