@@ -85,6 +85,19 @@
     0%, 100% { transform: rotate(-20deg) translateY(0); }
     50% { transform: rotate(-10deg) translateY(-3px); }
   }
+
+  .typing-text {
+  display: inline-block;
+  white-space: pre-wrap; /* preserves line breaks */
+  overflow: hidden;
+  border-right: 2px solid #ec4899; /* cursor effect */
+  animation: blink 0.7s steps(1) infinite;
+}
+
+@keyframes blink {
+  50% { border-color: transparent; }
+}
+
   </style>
 </head>
 <body class="font-sans text-white bg-black overflow-x-hidden">
@@ -321,7 +334,8 @@ window.addEventListener('load', () => {
       <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover z-0"></video>
       <div class="absolute inset-0 flex items-end justify-center px-6 pb-32">
         <div class="glass w-full max-w-md mx-0 p-6 rounded-xl text-center shadow-xl font-bold">
-          <p class="text-2xl text-black">${text}</p>
+          <p class="text-2xl text-black typing-text" data-full-text="${text}"></p>
+
         </div>
       </div>
     `;
@@ -337,7 +351,7 @@ window.addEventListener('load', () => {
       <div class="absolute inset-0 flex items-end justify-center mb-6 px-6">
         <div class="glass w-full max-w-md mx-0 p-8 rounded-2xl text-center shadow-xl font-bold ">
           <p class="text-lg text-gray-800 mb-4">عزیز دلم، خوشحال‌ترین آدم دنیا هستم که تونستم یک سال در کنارت باشم و تونستیم تمام سختیا و مشکلات رو با هم کنار بزنیم و با هم خاطرات به این خوشی رو رقم بزنیم</p>
-          <p class="text-2xl text-pink-600">❤️ ${text} ❤️</p>
+          <p class="text-2xl text-pink-600 typing-text" data-full-text="❤️ ${text} ❤️"></p>
         </div>
       </div>
     `;
@@ -345,7 +359,8 @@ window.addEventListener('load', () => {
     section.innerHTML = `
       <div class="absolute inset-0 flex items-end justify-center px-6 pb-32">
         <div class="glass w-full max-w-md mx-0 p-6 rounded-xl text-center shadow-xl font-bold">
-          <p class="text-2xl text-black">${text}</p>
+          <p class="text-2xl text-black typing-text" data-full-text="${text}"></p>
+
         </div>
       </div>
     `;
@@ -396,6 +411,34 @@ window.addEventListener('load', () => {
 }
 
 
+function typeText(element, text, speed = 30) {
+    let i = 0;
+    element.textContent = "";
+    const interval = setInterval(() => {
+        element.textContent += text.charAt(i);
+        i++;
+        if (i >= text.length) clearInterval(interval);
+    }, speed);
+}
+
+// Observe sections and trigger typing when visible
+const typingObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting && entry.target.querySelector('.typing-text')) {
+            const p = entry.target.querySelector('.typing-text');
+            const fullText = p.dataset.fullText;
+            if (!p.classList.contains('typed')) { // prevent re-typing
+                typeText(p, fullText, 40);
+                p.classList.add('typed');
+            }
+        }
+    });
+}, { threshold: 0.5 });
+
+document.querySelectorAll('section').forEach(section => typingObserver.observe(section));
+
+
+
 
     document.querySelectorAll("section").forEach(section => observer.observe(section));
 
@@ -413,18 +456,16 @@ window.addEventListener('load', () => {
 const musicBtn = document.getElementById("music-btn");
 let isPlaying = false;
 
-// Function to start music
+// Function to play music from start
 function startMusic() {
+  bgMusic.currentTime = 0; // start from the beginning
   bgMusic.play().then(() => {
-    bgMusic.muted = false; // unmute after first interaction
     isPlaying = true;
-    musicBtn.textContent = "⏸️";
-  }).catch((err) => {
-    console.log("Playback blocked:", err);
-  });
+    musicBtn.textContent = "⏸️"; // update button
+  }).catch(err => console.log("Playback blocked:", err));
 }
 
-// Unlock music on first user interaction
+// Start music on first user interaction
 function unlockMusic() {
   startMusic();
   document.removeEventListener("click", unlockMusic);
@@ -436,17 +477,19 @@ document.addEventListener("click", unlockMusic);
 document.addEventListener("touchstart", unlockMusic);
 document.addEventListener("scroll", unlockMusic);
 
-// Play/pause button
+// Toggle button
 musicBtn.addEventListener("click", () => {
   if (isPlaying) {
     bgMusic.pause();
     musicBtn.textContent = "🎶";
   } else {
+    bgMusic.currentTime = 0; // optional: always restart on play
     bgMusic.play();
     musicBtn.textContent = "⏸️";
   }
   isPlaying = !isPlaying;
 });
+
 
 
     // Floating hearts generator
