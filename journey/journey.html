@@ -114,7 +114,7 @@
   <button id="music-btn" class="fixed top-4 right-4 z-50 text-white px-3 py-2 rounded-full shadow-lg">
     🎶
   </button>
-  <audio id="bg-music" autoplay loop muted>
+  <audio id="bg-music" preload="auto" autoplay loop >
     <source src="assets/Can't Help Falling In Love.mp3" type="audio/mpeg">
   </audio>
   
@@ -462,36 +462,32 @@ document.querySelectorAll('section').forEach(section => typingObserver.observe(s
 const musicBtn = document.getElementById("music-btn");
 let isPlaying = false;
 
-// Function to play music from start
+// Function to start music safely
 function startMusic() {
-  bgMusic.currentTime = 0; // start from the beginning
+  bgMusic.muted = false;
+  bgMusic.currentTime = 0; // start fresh
   bgMusic.play().then(() => {
     isPlaying = true;
-    musicBtn.textContent = "⏸️"; // update button
+    musicBtn.textContent = "⏸️";
   }).catch(err => console.log("Playback blocked:", err));
 }
 
-// Start music on first user interaction
+// Unlock music on first gesture
 function unlockMusic() {
   startMusic();
   document.removeEventListener("click", unlockMusic);
   document.removeEventListener("touchstart", unlockMusic);
-  document.removeEventListener("scroll", unlockMusic);
 }
-
 document.addEventListener("click", unlockMusic);
 document.addEventListener("touchstart", unlockMusic);
-document.addEventListener("scroll", unlockMusic);
 
-// Toggle button
+// Button toggle
 musicBtn.addEventListener("click", () => {
   if (isPlaying) {
     bgMusic.pause();
     musicBtn.textContent = "🎶";
   } else {
-    bgMusic.currentTime = 0; // optional: always restart on play
-    bgMusic.play();
-    musicBtn.textContent = "⏸️";
+    startMusic();
   }
   isPlaying = !isPlaying;
 });
