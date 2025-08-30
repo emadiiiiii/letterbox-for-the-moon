@@ -75,13 +75,13 @@
 <body class="font-sans text-white bg-black overflow-x-hidden">
 
   <!-- Music Toggle Button -->
-  <button id="music-btn" class="fixed top-4 right-4 z-50 bg-pink-500 hover:bg-pink-600 text-white px-3 py-2 rounded-full shadow-lg">
+  <button id="music-btn" class="fixed top-4 right-4 z-50 text-white px-3 py-2 rounded-full shadow-lg">
     🎶
   </button>
-  <audio id="bg-music" autoplay loop>
+  <audio id="bg-music" autoplay loop muted>
     <source src="assets/Can't Help Falling In Love.mp3" type="audio/mpeg">
   </audio>
-
+  
   <!-- Timeline -->
    <nav dir="rtl">  
 
@@ -94,6 +94,7 @@
       
     </div>
   </div>
+ 
 
   <script>
     const chick = document.createElement("img");
@@ -164,6 +165,44 @@ beakHearts.push(beakHeart);
     }
   
     setInterval(moveChick, 100);
+// Chick click handler
+chick.addEventListener("click", () => {
+  beakHearts.forEach((h) => {
+    const startX = parseFloat(h.style.left);
+    const startBottom = parseFloat(h.style.bottom);
+
+    // Random positions for scattering in the air
+    const scatterX = startX + (Math.random() * 200 - 100);
+    const scatterY = startBottom + (Math.random() * 100 + 50); // rise higher
+
+    // Random rotation
+    const rotateDeg = Math.random() * 360;
+
+    // First, scatter around in the air
+    h.style.transition = "all 0.6s ease-out";
+    h.style.left = scatterX + "px";
+    h.style.bottom = scatterY + "px";
+    h.style.transform = `rotate(${rotateDeg}deg)`;
+
+    // After scattering, fall down off-screen
+    setTimeout(() => {
+      const fallX = scatterX + (Math.random() * 200 - 100); // final horizontal drift
+      h.style.transition = "all 1.5s ease-in";
+      h.style.left = fallX + "px";
+      h.style.bottom = -100 + "px"; // fall below screen
+      h.style.transform = `rotate(${rotateDeg + 360}deg)`; // continue spinning
+    }, 600);
+  });
+
+  // Remove hearts after animation
+  setTimeout(() => {
+    beakHearts.forEach(h => h.remove());
+    beakHearts.length = 0;
+  }, 2200);
+});
+
+
+
   </script>
   
 
@@ -173,7 +212,7 @@ beakHearts.push(beakHeart);
     const timeline = document.getElementById("timeline");
 
     const sections = [
-      { image: "assets/0.jpg", text: "خب خب، می‌خوام یه قصه برات تعریف کنم" },
+      { image: "assets/gif.mp4", text: "خب خب، می‌خوام یه قصه برات تعریف کنم" },
       { image: "assets/1.jpg", text: "همه چیز از اینجا شروع شد" },
       { image: "assets/2.jpg", text: "دیت دوم رفتیم وینگ استاپ عین روانیا" },
       { image: "assets/3.jpg", text: "متوجه شدیم هردومون دوست داریم غذا بخوریم" },
@@ -244,10 +283,26 @@ beakHearts.push(beakHeart);
 
     ];
 
-  sections.forEach(({ image, text }, index) => {
+    sections.forEach(({ image, text }, index) => {
   const section = document.createElement("section");
-  section.style.backgroundImage = `url('${image}')`;
   
+  if (image.endsWith(".mp4")) {
+    // Video section
+    section.innerHTML = `
+      <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover z-0"></video>
+      <div class="absolute inset-0 flex items-end justify-center px-6 pb-32">
+        <div class="glass w-full max-w-md mx-0 p-6 rounded-xl text-center shadow-xl font-bold">
+          <p class="text-2xl text-black">${text}</p>
+        </div>
+      </div>
+    `;
+    const video = section.querySelector("video");
+    video.src = image;
+  }
+  else
+  {
+
+    section.style.backgroundImage = `url('${image}')`;
   if (index === sections.length - 1) {
     section.innerHTML = `
       <div class="absolute inset-0 flex items-end justify-center mb-6 px-6">
@@ -265,6 +320,7 @@ beakHearts.push(beakHeart);
         </div>
       </div>
     `;
+  }
   }
 
   timeline.appendChild(section);
@@ -325,42 +381,44 @@ beakHearts.push(beakHeart);
     // Music button toggle
   
     const bgMusic = document.getElementById("bg-music");
-  const musicBtn = document.getElementById("music-btn");
-  let isPlaying = false;
+const musicBtn = document.getElementById("music-btn");
+let isPlaying = false;
 
-  // Try to start autoplay quietly
-  window.addEventListener("load", () => {
-    bgMusic.play().then(() => {
-      bgMusic.muted = false; // unmute if allowed
-      isPlaying = true;
-      musicBtn.textContent = "⏸️";
-    }).catch(() => {
-      // Browser blocked it — wait for first user interaction
-      const unlock = () => {
-        bgMusic.play();
-        bgMusic.muted = false;
-        isPlaying = true;
-        musicBtn.textContent = "⏸️";
-        document.removeEventListener("click", unlock);
-        document.removeEventListener("scroll", unlock);
-      };
-      document.addEventListener("click", unlock);
-      document.addEventListener("scroll", unlock);
-    });
+// Function to start music
+function startMusic() {
+  bgMusic.play().then(() => {
+    bgMusic.muted = false; // unmute after first interaction
+    isPlaying = true;
+    musicBtn.textContent = "⏸️";
+  }).catch((err) => {
+    console.log("Playback blocked:", err);
   });
+}
 
-  // Button toggle still works
-  musicBtn.addEventListener("click", () => {
-    if (isPlaying) {
-      bgMusic.pause();
-      musicBtn.textContent = "🎶";
-    } else {
-      bgMusic.play();
-      bgMusic.muted = false;
-      musicBtn.textContent = "⏸️";
-    }
-    isPlaying = !isPlaying;
-  });
+// Unlock music on first user interaction
+function unlockMusic() {
+  startMusic();
+  document.removeEventListener("click", unlockMusic);
+  document.removeEventListener("touchstart", unlockMusic);
+  document.removeEventListener("scroll", unlockMusic);
+}
+
+document.addEventListener("click", unlockMusic);
+document.addEventListener("touchstart", unlockMusic);
+document.addEventListener("scroll", unlockMusic);
+
+// Play/pause button
+musicBtn.addEventListener("click", () => {
+  if (isPlaying) {
+    bgMusic.pause();
+    musicBtn.textContent = "🎶";
+  } else {
+    bgMusic.play();
+    musicBtn.textContent = "⏸️";
+  }
+  isPlaying = !isPlaying;
+});
+
 
     // Floating hearts generator
     function createHeart() {
