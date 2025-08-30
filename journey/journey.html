@@ -88,11 +88,15 @@
 
   .typing-text {
   display: inline-block;
-  white-space: pre-wrap; /* preserves line breaks */
+  direction: rtl;              /* Right-to-left text */
+  text-align: right;           /* Align text to the right */
+  white-space: pre-wrap;
   overflow: hidden;
-  border-right: 2px solid #ec4899; /* cursor effect */
+  border-left: 2px solid #ec4899; /* Move cursor to the left side for RTL */
   animation: blink 0.7s steps(1) infinite;
 }
+
+
 
 @keyframes blink {
   50% { border-color: transparent; }
@@ -119,6 +123,8 @@
 
      <div id="timeline"></div>
     </nav>
+
+    
 
   <!-- Progress bar with emoji markers -->
   <div id="progress-container" class="fixed bottom-0 left-0 w-full h-4 bg-gray-800 z-40">
