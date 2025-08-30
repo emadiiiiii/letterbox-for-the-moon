@@ -30,7 +30,22 @@
       opacity: 1;
     }
     
-   
+    .spinner {
+  border-top-color: #ec4899; /* pink */
+  border-radius: 50%;
+  width: 64px;
+  height: 64px;
+  border-width: 4px;
+  animation: spin 1s linear infinite;
+}
+.spinner-text{
+  font-family: "Vazirmatn";
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
     .glass {
       backdrop-filter: blur(10px);
       background: rgba(255,255,255,0.65);
@@ -73,7 +88,11 @@
   </style>
 </head>
 <body class="font-sans text-white bg-black overflow-x-hidden">
-
+  <div id="loader" class="fixed inset-0 flex flex-col justify-center items-center bg-black z-50">
+    <div class="spinner border-4 border-t-pink-500 border-gray-200 rounded-full w-16 h-16 mb-4 animate-spin"></div>
+    <p class="spinner-text  text-white text-lg" dir="rtl">یه کوچولو صبتن &#128513;</p>
+  </div>
+  
   <!-- Music Toggle Button -->
   <button id="music-btn" class="fixed top-4 right-4 z-50 text-white px-3 py-2 rounded-full shadow-lg">
     🎶
@@ -209,6 +228,15 @@ chick.addEventListener("click", () => {
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
   <script>
+
+    // Wait for window load (all images, videos, audio)
+window.addEventListener('load', () => {
+    const loader = document.getElementById('loader');
+    loader.style.transition = 'opacity 0.5s ease';
+    loader.style.opacity = 0;
+    setTimeout(() => loader.remove(), 500);
+});
+
     const timeline = document.getElementById("timeline");
 
     const sections = [
