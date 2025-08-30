@@ -29,9 +29,7 @@
     section.visible {
       opacity: 1;
     }
-    .fade-top, .fade-bottom {
-      
-    }
+    
    
     .glass {
       backdrop-filter: blur(10px);
@@ -60,8 +58,8 @@
   <button id="music-btn" class="fixed top-4 right-4 z-50 bg-pink-500 hover:bg-pink-600 text-white px-3 py-2 rounded-full shadow-lg">
     🎶
   </button>
-  <audio id="bg-music" loop>
-    <source src="assets/music.mp3" type="audio/mpeg">
+  <audio id="bg-music" autoplay loop>
+    <source src="assets/Can't Help Falling In Love.mp3" type="audio/mpeg">
   </audio>
 
   <!-- Timeline -->
@@ -81,6 +79,7 @@
     const timeline = document.getElementById("timeline");
 
     const sections = [
+      { image: "assets/0.jpg", text: "خب خب، می‌خوام یه قصه برات تعریف کنم" },
       { image: "assets/1.jpg", text: "همه چیز از اینجا شروع شد" },
       { image: "assets/2.jpg", text: "دیت دوم رفتیم وینگ استاپ عین روانیا" },
       { image: "assets/3.jpg", text: "متوجه شدیم هردومون دوست داریم غذا بخوریم" },
@@ -166,7 +165,7 @@
     `;
   } else {
     section.innerHTML = `
-      <div class="absolute inset-0 flex items-end justify-center px-6 pb-12">
+      <div class="absolute inset-0 flex items-end justify-center px-6 pb-32">
         <div class="glass w-full max-w-md mx-0 p-6 rounded-xl text-center shadow-xl font-bold">
           <p class="text-2xl text-black">${text}</p>
         </div>
@@ -198,19 +197,44 @@
     });
 
     // Music button toggle
-    const musicBtn = document.getElementById("music-btn");
+  
     const bgMusic = document.getElementById("bg-music");
-    let isPlaying = false;
-    musicBtn.addEventListener("click", () => {
-      if (isPlaying) {
-        bgMusic.pause();
-        musicBtn.textContent = "🎶";
-      } else {
+  const musicBtn = document.getElementById("music-btn");
+  let isPlaying = false;
+
+  // Try to start autoplay quietly
+  window.addEventListener("load", () => {
+    bgMusic.play().then(() => {
+      bgMusic.muted = false; // unmute if allowed
+      isPlaying = true;
+      musicBtn.textContent = "⏸️";
+    }).catch(() => {
+      // Browser blocked it — wait for first user interaction
+      const unlock = () => {
         bgMusic.play();
+        bgMusic.muted = false;
+        isPlaying = true;
         musicBtn.textContent = "⏸️";
-      }
-      isPlaying = !isPlaying;
+        document.removeEventListener("click", unlock);
+        document.removeEventListener("scroll", unlock);
+      };
+      document.addEventListener("click", unlock);
+      document.addEventListener("scroll", unlock);
     });
+  });
+
+  // Button toggle still works
+  musicBtn.addEventListener("click", () => {
+    if (isPlaying) {
+      bgMusic.pause();
+      musicBtn.textContent = "🎶";
+    } else {
+      bgMusic.play();
+      bgMusic.muted = false;
+      musicBtn.textContent = "⏸️";
+    }
+    isPlaying = !isPlaying;
+  });
 
     // Floating hearts generator
     function createHeart() {
