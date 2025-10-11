@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جعبه خاطرات مهتاب - کهکشانی از عشق</title>
+    <style>
+        /* ------------------------------------------------ */
+        /* --- CSS اصلی برای ظاهر کارت‌ها و فونت --- */
+        /* ------------------------------------------------ */
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800;900&display=swap');
+
+        /* فونت و ریشه‌ها قبلاً تعریف شده */
+:root {
+    --primary-color: #f06292;
+    --accent-color: #4db6ac;
+    --glass-bg: rgba(255, 255, 255, 0.15);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --text-color: #f0f0f0;
+    --shadow-light: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* بدنه */
+body {
+    font-family: 'Vazirmatn', sans-serif;
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    text-align: center;
+    overflow-x: hidden;
+    background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+}
+
+/* canvas برای بکگراند */
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+}
+
+/* wrapper محتوا */
+#content-wrapper {
+    position: relative;
+    z-index: 10;
+    padding: 10px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* header */
+header {
+    margin-bottom: 20px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 10px;
+    backdrop-filter: blur(5px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-light);
+    max-width: 95%;
+}
+
+h1 {
+    color: var(--primary-color);
+    font-weight: 900;
+    font-size: clamp(1.5rem, 5vw, 2em); /* فونت ریسپانسیو */
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    margin: 0;
+}
+
+.subtitle {
+    font-weight: 600;
+    color: var(--accent-color);
+    margin-top: 5px;
+    font-size: clamp(0.8rem, 3vw, 0.9em);
+}
+
+/* grid کارت‌ها */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    width: 90%;
+    max-width: 1000px;
+}
+
+/* کارت */
+.card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 15px;
+    padding: 15px;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow: var(--shadow-light);
+    overflow: hidden;
+    position: relative;
+    min-height: 100px;
+}
+
+.card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 15px 40px rgba(255, 99, 132, 0.3);
+}
+
+.card h2 {
+    color: var(--primary-color);
+    font-size: clamp(1.1rem, 4vw, 1.3em);
+    margin-bottom: 10px;
+}
+
+.card-content {
+    height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: all 0.6s ease-out;
+    text-align: justify;
+    text-align-last: center;
+}
+
+.card-content.open {
+    height: auto;
+    opacity: 1;
+    padding-top: 10px;
+}
+
+#gallery img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+/* قلب‌های شناور */
+.heart-float {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background-color: var(--primary-color);
+    transform: rotate(-45deg);
+    opacity: 0.8;
+    pointer-events: none;
+    animation: floatUp 3s ease-out forwards;
+}
+
+.heart-float::before, .heart-float::after {
+    content: "";
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+}
+.heart-float::before { top: -7.5px; left: 0; }
+.heart-float::after { left: 7.5px; top: 0; }
+
+@keyframes floatUp {
+    0% { transform: translateY(0) rotate(-45deg); opacity: 1; }
+    100% { transform: translateY(-50px) rotate(-45deg); opacity: 0; }
+}
+
+/* برای موبایل بیشتر بهینه‌سازی شده */
+@media (max-width: 600px) {
+    .cards-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    h1 {
+        font-size: 1.6em;
+    }
+    .card {
+        min-height: auto;
+    }
+}
+
+    </style>
+</head>
+<body>
+
+    <div id="content-wrapper">
+        <header>
+            <h1>مهتاب خوشگلم، روزت مبارک ❤️</h1>
+            <p class="subtitle">این کهکشان، هدیه‌ی من به روشن‌ترین ستاره‌ی زندگیمه.</p>
+            <p class="subtitle">ماه هم که می‌بینی نداره، چون ماه داره به گوشیش نگاه می‌کنه:))</p>
+        
+        </header>
+
+        <div class="cards-grid">
+
+             <div class="card" id="card3">
+                <h2>اول اینو ببین:))</h2>
+                <div class="card-content" id="gallery">
+                    <p>با  اینکه شبیهمون نیستن ولی دوستش دارم :))</p>
+                    <p>دختر ناز و کوچک من :_) </p>
+                    <img src="flowers.png" alt="عکس مورد علاقه ما" loading="lazy">
+                    <p style="font-size: 0.9em; margin-top: 10px;">
+                    </p>
+                </div>
+            </div>
+
+            <div class="card" id="card1">
+                <h2>😭 ببجید 😭</h2>
+                <div class="card-content">
+                    <p>
+                        مهتاب قشنگم، ناراحتم که نتونستم بهت تبریک بگم و کاریش هم نمی‌تونم یکنم.
+                    </p>
+                    <p>
+                        فقط می‌تونم تلاش کنم که جورای دیگه خوشحالت کنم و این یکی از اون تلاشاست:)
+                    </p>
+                    <p style="font-weight: 800; color: var(--primary-color);">
+                       &#10084; روزت مبارک‌ترین مبارک &#10084;
+                    </p>
+                    
+                </div>
+            </div>
+
+            <div class="card" id="card2">
+                <h2>روزشمار</h2>
+                <div class="card-content" id="timeline">
+                    <p>ما با هم... <span id="days-counter" style="font-size: 1.8em;">...</span> روز زندگی کردیم!</p>
+                    <p style="font-size: 0.9em;">
+                        این  روزشمار تا همیشه اینحا می‌مونه و می‌تونی هروقت بخوای بیای ببینیش:))
+                    </p>
+                </div>
+            </div>
+
+           
+<!--             
+            <div class="card" id="card4">
+                <h2>💍 وعده من به تو</h2>
+                <div class="card-content">
+                    <p>
+                        به عنوان یک توسعه‌دهنده متعهد می‌شوم:
+                    </p>
+                    <p style="font-size: 1.1em; font-weight: 800; color: var(--accent-color);">
+                        همیشه باگ‌های زندگی‌ات را Fix کنم و همیشه کنارت باشم تا با هم Featureهای جدید و خوب بسازیم.
+                    </p>
+                    <p style="margin-top: 20px;">
+                        با عشق، **[اسم خودت را اینجا بنویس]**
+                    </p>
+                </div>
+            </div> -->
+
+        </div>
+        
+    </div>
+
+
+<div id="music-control">
+  <button id="music-btn">🎶 پخش موسیقی</button>
+  <audio id="bg-music" loop preload="auto">
+    <source src="Dokhtar.mp3" type="audio/mpeg">
+    مرورگر شما از پخش صوت پشتیبانی نمی‌کند.
+  </audio>
+</div>
+
+<script>
+  const music = document.getElementById('bg-music');
+  const musicBtn = document.getElementById('music-btn');
+  let isPlaying = false;
+
+  musicBtn.addEventListener('click', () => {
+    if (isPlaying) {
+      music.pause();
+      musicBtn.textContent = "🎶 پخش موسیقی";
+    } else {
+      music.play();
+      musicBtn.textContent = "⏸ توقف موسیقی";
+    }
+    isPlaying = !isPlaying;
+  });
+
+  // برای موبایل: فقط با لمس کاربر شروع می‌کند
+  document.body.addEventListener('touchstart', () => {
+    if (!isPlaying) {
+      music.play().catch(() => {});
+      musicBtn.textContent = "⏸ توقف موسیقی";
+      isPlaying = true;
+    }
+  }, { once: true });
+</script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+    
+    <script>
+        /* ------------------------------------------------ */
+        /* --- کد Three.js برای بکگراند ستاره‌ای --- */
+        /* ------------------------------------------------ */
+        
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(
+            75,
+            window.innerWidth / window.innerHeight,
+            0.1,
+            1000
+        );
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        const starGeometry = new THREE.BufferGeometry();
+        const starCount = window.innerWidth < 600 ? 2000 : 5000; // ستاره کمتر برای موبایل
+
+        const starPositions = new Float32Array(starCount * 3);
+        
+        for (let i = 0; i < starCount * 3; i++) {
+            starPositions[i] = (Math.random() - 0.5) * 1500; 
+        }
+        
+        starGeometry.setAttribute("position", new THREE.BufferAttribute(starPositions, 3)); 
+
+        const starMaterial = new THREE.PointsMaterial({
+            color: 0xffffff,
+            size: 1.5, 
+            sizeAttenuation: true 
+        });
+        
+        const stars = new THREE.Points(starGeometry, starMaterial);
+        scene.add(stars);
+
+        camera.position.z = 5; 
+
+        function animate() {
+            requestAnimationFrame(animate);
+            stars.rotation.x += 0.0001; 
+            stars.rotation.y += 0.0002;
+            stars.rotation.z += 0.0001;
+            
+            renderer.render(scene, camera);
+        }
+        
+        animate(); 
+
+        // پاسخگویی به تغییر اندازه پنجره (برای ریسپانسیو بودن Three.js)
+        window.addEventListener("resize", () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        /* ------------------------------------------------ */
+        /* --- جاوا اسکریپت تعامل کارت‌ها و شمارنده --- */
+        /* ------------------------------------------------ */
+
+        const cards = document.querySelectorAll('.card');
+
+        cards.forEach(card => {
+            card.addEventListener('click', () => {
+                const content = card.querySelector('.card-content');
+                const isOpen = content.style.height !== '' && content.style.height !== '0px';
+
+                // بستن همه کارت‌ها قبل از باز کردن جدید
+                document.querySelectorAll('.card-content').forEach(c => {
+                    c.style.height = '0px';
+                    c.style.opacity = '0';
+                });
+                
+                // باز کردن کارت فعلی
+                if (!isOpen) {
+                    content.style.height = content.scrollHeight + 'px'; 
+                    content.style.opacity = '1';
+                    
+                    // افکت کوچک قلب هنگام باز شدن
+                    for (let i = 0; i < 3; i++) {
+                        createCardHeart(card);
+                    }
+                }
+            });
+        });
+
+        function createCardHeart(card) {
+            const heart = document.createElement('div');
+            heart.classList.add('heart-float');
+            
+            heart.style.left = Math.random() * 80 + 10 + '%'; 
+            heart.style.bottom = '0px'; 
+            
+            card.appendChild(heart);
+
+            setTimeout(() => {
+                heart.remove();
+            }, 3000); 
+        }
+
+        // --- شمارنده روزها ---
+        const startDate = new Date(2024, 7, 31); // **تاریخ شروع رابطه خود را اینجا وارد کنید**
+        
+        function updateDaysCounter() {
+            const now = new Date();
+            const timeDiff = now - startDate;
+            const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+            
+            const daysCounterElement = document.getElementById('days-counter');
+            if (daysCounterElement) {
+                daysCounterElement.textContent = days.toLocaleString('fa-IR'); 
+            }
+        }
+
+        updateDaysCounter();
+        
+    </script>
+</body>
+</html>
